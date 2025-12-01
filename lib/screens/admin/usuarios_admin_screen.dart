@@ -160,9 +160,6 @@ class _UsuariosAdminScreenState extends State<UsuariosAdminScreen> {
     }
   }
 
-  // ================================
-  // 🔵 MODAL DE CREACIÓN DE USUARIO
-  // ================================
   void _mostrarModalCreacion() {
     final TextEditingController nombreController = TextEditingController();
     final TextEditingController emailController = TextEditingController();
@@ -243,10 +240,6 @@ class _UsuariosAdminScreenState extends State<UsuariosAdminScreen> {
       ),
     );
   }
-
-  // ================================
-  // 🔵 MODAL DE EDICIÓN
-  // ================================
   void _mostrarModalEdicion(Map<String, dynamic> usuario) {
     final TextEditingController nombreController =
         TextEditingController(text: usuario['nombre']);
@@ -302,9 +295,6 @@ class _UsuariosAdminScreenState extends State<UsuariosAdminScreen> {
     );
   }
 
-  // ================================
-  // 🔵 FILTRO VISUAL
-  // ================================
   Widget _buildFiltroRoles() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -349,9 +339,6 @@ class _UsuariosAdminScreenState extends State<UsuariosAdminScreen> {
     }
   }
 
-  // ================================
-  // 🔵 UI PRINCIPAL
-  // ================================
   @override
   Widget build(BuildContext context) {
     return Scaffold(

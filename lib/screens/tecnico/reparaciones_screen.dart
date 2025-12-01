@@ -20,15 +20,11 @@ class _ReparacionesScreenState extends State<ReparacionesScreen> {
     cargarEquiposEnMantenimiento();
   }
 
-  // Función corregida: usa doble join a través de 'reservas' para filtrar por 'equipo_id'
   Future<Map<String, dynamic>> obtenerUltimoReporte(int equipoId) async {
     try {
-      // SELECT: reportes, fecha, nombre del técnico (via recibido_por) y la FK del equipo (via reservas)
       final data = await supabase
           .from('prestamos')
-          // Usamos 'reservas!inner' para asegurar que solo traemos préstamos vinculados a una reserva
           .select('reporte_dano, fecha_devolucion, recibido_por(nombre), reservas!inner(equipo_id)')
-          // FILTRO: Ahora filtramos por la columna 'equipo_id' dentro de la tabla 'reservas'.
           .eq('reservas.equipo_id', equipoId) 
           .not('reporte_dano', 'is', null)
           .order('fecha_devolucion', ascending: false)
@@ -36,7 +32,6 @@ class _ReparacionesScreenState extends State<ReparacionesScreen> {
           .maybeSingle();
 
       if (data != null) {
-        // La columna para el nombre del técnico es 'recibido_por' según tu esquema.
         final tecnicoNombre = data['recibido_por']?['nombre'] ?? 'Técnico desconocido'; 
         
         return {
@@ -54,7 +49,6 @@ class _ReparacionesScreenState extends State<ReparacionesScreen> {
         'recibido_por_nombre': 'N/A'
       };
     } catch (e) {
-      // Imprime el error completo si ocurre, para depuración
       print('--- ERROR SUPABASE al obtener reporte para Equipo ID $equipoId ---');
       print(e);
       print('------------------------------------------------------------------');

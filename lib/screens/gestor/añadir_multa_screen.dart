@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
-// ===========================================================================
-// COMPONENTE REUTILIZABLE: BUSCADOR DE CLIENTE
-// ===========================================================================
-
 class ClienteSearchField extends StatefulWidget {
   final Function(String? userId, String? userName) onUserSelected;
 
@@ -147,11 +143,6 @@ class _ClienteSearchFieldState extends State<ClienteSearchField> {
   }
 }
 
-
-// ===========================================================================
-// PANTALLA PRINCIPAL: REGISTRAR MULTA
-// ===========================================================================
-
 class AddMultaScreen extends StatefulWidget {
   const AddMultaScreen({super.key});
 
@@ -258,7 +249,6 @@ class _AddMultaScreenState extends State<AddMultaScreen> {
 
               const SizedBox(height: 20),
 
-              // --- TARJETA DE MONTO ---
               Card(
                 elevation: 3,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -306,7 +296,6 @@ class _AddMultaScreenState extends State<AddMultaScreen> {
 
               const SizedBox(height: 20),
 
-              // --- TARJETA DE PRÉSTAMOS ---
               Card(
                 elevation: 3,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -360,7 +349,6 @@ class _AddMultaScreenState extends State<AddMultaScreen> {
 
               const SizedBox(height: 30),
 
-              // --- BOTÓN GUARDAR ---
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(

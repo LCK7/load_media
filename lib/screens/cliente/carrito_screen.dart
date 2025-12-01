@@ -66,9 +66,7 @@ class _CarritoScreenState extends State<CarritoScreen> {
     final s = imagenUrl.trim();
     if (s.startsWith('http')) return s;
     
-    // Si guardas paths en storage (bucket 'equipos')
     try {
-      // Necesitas que el bucket 'equipos' sea público o tener las políticas de RLS correctas.
       return Supabase.instance.client.storage.from('equipos').getPublicUrl(s);
     } catch (_) {
       return '';
@@ -92,7 +90,6 @@ class _CarritoScreenState extends State<CarritoScreen> {
   Future<void> seleccionarRangoFechas() async {
     final now = DateTime.now();
     
-    // Selector de Fecha de Inicio
     final pickedInicio = await showDatePicker(
       context: context,
       initialDate: fechaInicio ?? now,
@@ -116,9 +113,6 @@ class _CarritoScreenState extends State<CarritoScreen> {
       fechaFin = pickedFin;
     });
   }
-
-  // Lógica de RESERVA: Crea la solicitud y borra el carrito. 
-  // EL ESTADO DEL EQUIPO LO CAMBIA EL GESTOR.
   Future<void> reservarTodos() async {
     if (carrito.isEmpty) {
       ScaffoldMessenger.of(context)
@@ -132,7 +126,6 @@ class _CarritoScreenState extends State<CarritoScreen> {
     }
 
     final userId = supabase.auth.currentUser!.id;
-    // Horas por defecto (puedes añadir un selector de hora más tarde)
     const horaInicio = '09:00:00';
     const horaFin = '17:00:00';
     final df = DateFormat('yyyy-MM-dd'); // Formato para Supabase
@@ -144,20 +137,17 @@ class _CarritoScreenState extends State<CarritoScreen> {
         final equipo = item['equipos'];
         final equipoId = equipo['id'];
 
-        // 1. Insertar la reserva en estado 'pendiente'
         await supabase.from('reservas').insert({
           'usuario_id': userId,
           'equipo_id': equipoId,
           'fecha_reserva': df.format(fechaInicio!),
           'hora_inicio': horaInicio,
           'hora_fin': horaFin,
-          'estado': 'pendiente', // CRÍTICO: Inicia en pendiente
+          'estado': 'pendiente',
         });
         
-        // **IMPORTANTE:** No se actualiza el estado del equipo aquí. Lo hace el gestor.
       }
 
-      // 2. Borrar todos los items del carrito del usuario
       await supabase.from('carrito').delete().eq('user_id', userId);
 
       if (!mounted) return;
@@ -166,7 +156,6 @@ class _CarritoScreenState extends State<CarritoScreen> {
             content: Text('Reservas creadas y pendientes de aprobación.')),
       );
 
-      // 3. Recargar la UI
       await cargarCarrito();
       setState(() {
         fechaInicio = null;

@@ -103,20 +103,15 @@ class _CatalogoClienteScreenState extends State<CatalogoClienteScreen> {
     }
   }
 
-  // >>> FUNCIÓN CORREGIDA
   String getImagenUrl(dynamic eq) {
-    // Usamos 'imagen_url' porque es el campo usado en la pantalla de administración
     final url = eq['imagen_url']; 
 
     if (url == null || url.toString().isEmpty) return "";
 
-    // Si ya es una URL completa (como la que inserta el admin), la devolvemos.
     if (url.toString().startsWith("http")) return url;
 
-    // Si es un 'path' de Supabase Storage, generamos la URL pública.
     return supabase.storage.from('equipos').getPublicUrl(url);
   }
-  // <<<
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +235,6 @@ class _CatalogoClienteScreenState extends State<CatalogoClienteScreen> {
                                         ),
                                         const SizedBox(height: 12),
 
-                                        // Botón reservar
                                         Align(
                                           alignment: Alignment.centerRight,
                                           child: ElevatedButton(

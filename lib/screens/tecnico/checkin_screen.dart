@@ -20,12 +20,9 @@ class _DevolucionScreenState extends State<DevolucionScreen> {
     cargarPrestamosPendientes();
   }
 
-  // Carga las reservas CONFIRMADAS (prestadas) que están pendientes de Devolución.
   Future<void> cargarPrestamosPendientes() async {
     setState(() => cargando = true);
     try {
-      // Trae las reservas cuyo estado es 'confirmada', ya que esto indica que el equipo fue prestado
-      // y está esperando el check-in (devolución).
       final data = await supabase
           .from('reservas')
           .select('''
@@ -36,7 +33,7 @@ class _DevolucionScreenState extends State<DevolucionScreen> {
             equipos(id, nombre, imagen_url, estado),
             usuarios(nombre)
           ''')
-          .eq('estado', 'confirmada') // Filtra solo equipos prestados
+          .eq('estado', 'confirmada')
           .order('fecha_reserva', ascending: true);
       
       if (!mounted) return;
@@ -52,7 +49,6 @@ class _DevolucionScreenState extends State<DevolucionScreen> {
     }
   }
 
-  // Función para registrar la DEVOLUCIÓN (Check-in)
   Future<void> registrarDevolucion({
     required int reservaId,
     required int equipoId,
@@ -63,7 +59,6 @@ class _DevolucionScreenState extends State<DevolucionScreen> {
     setState(() => cargando = true);
 
     try {
-      // 1. Encontrar el registro de préstamo asociado a esta reserva.
       final prestamoExistente = await supabase
           .from('prestamos')
           .select('id')
@@ -72,20 +67,17 @@ class _DevolucionScreenState extends State<DevolucionScreen> {
 
       final prestamoId = prestamoExistente['id'];
 
-      // 2. Actualizar el registro de préstamo existente con los datos de devolución.
       await supabase.from('prestamos').update({
-        'recibido_por': tecnicoId, // El técnico es quien recibe el equipo
+        'recibido_por': tecnicoId,
         'fecha_devolucion': DateTime.now().toIso8601String(),
         'reporte_dano': reporteDano.isNotEmpty ? reporteDano : null,
-      }).eq('id', prestamoId); // Usamos el ID del préstamo encontrado
+      }).eq('id', prestamoId);
 
-      // 3. Determinar y actualizar el estado del equipo
       final nuevoEstadoEquipo = tieneDano ? 'mantenimiento' : 'disponible';
       await supabase.from('equipos').update({
         'estado': nuevoEstadoEquipo,
       }).eq('id', equipoId);
       
-      // 4. Actualizar estado de la reserva a 'finalizada'
       await supabase.from('reservas').update({
         'estado': 'finalizada',
       }).eq('id', reservaId);
@@ -98,7 +90,7 @@ class _DevolucionScreenState extends State<DevolucionScreen> {
                 'Devolución registrada. Equipo en estado: $nuevoEstadoEquipo')),
       );
 
-      await cargarPrestamosPendientes(); // Recargar la lista
+      await cargarPrestamosPendientes();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -108,7 +100,6 @@ class _DevolucionScreenState extends State<DevolucionScreen> {
     }
   }
 
-  // Diálogo para ingresar detalles de la devolución
   Future<void> mostrarDialogoDevolucion(
       int reservaId, int equipoId, String equipoNombre) async {
     final reporteDanoController = TextEditingController();
@@ -157,7 +148,6 @@ class _DevolucionScreenState extends State<DevolucionScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if (tieneDano && reporteDanoController.text.trim().isEmpty) {
-                      // Se puede agregar una validación aquí si el daño es obligatorio
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Añade una descripción del daño.')));
                       return;
@@ -184,7 +174,6 @@ class _DevolucionScreenState extends State<DevolucionScreen> {
     );
   }
 
-  // Función para resolver la URL de la imagen
   String resolveImageUrl(String? path) {
     if (path == null || path.isEmpty) return 'https://via.placeholder.com/150';
     if (path.startsWith('http')) return path;
@@ -203,7 +192,6 @@ class _DevolucionScreenState extends State<DevolucionScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // Estado Vacío Mejorado para el Técnico
     final emptyState = Scaffold(
       appBar: AppBar(
         title: const Text('Check-in (Devolución) 🧑‍🔧'),

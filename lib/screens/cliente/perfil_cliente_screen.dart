@@ -169,7 +169,6 @@ class _PerfilClienteScreenState extends State<PerfilClienteScreen> {
     );
   }
 
-  /// 🔵 Widget visual para cada dato del perfil
   Widget _itemPerfil(String titulo, String valor) {
     return Container(
       padding: const EdgeInsets.all(14),

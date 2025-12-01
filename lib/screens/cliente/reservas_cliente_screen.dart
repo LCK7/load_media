@@ -21,18 +21,12 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
     cargarMisReservas();
   }
 
-  // Función para resolver la URL de la imagen desde Supabase Storage
   String resolveImageUrl(String? path) {
-    // 1. Si el path es nulo o vacío, devuelve una URL de placeholder.
     if (path == null || path.isEmpty) return 'https://via.placeholder.com/60';
-    // 2. Si ya es una URL completa (http/https), la devuelve directamente.
     if (path.startsWith('http')) return path;
-    // 3. Resuelve la URL pública de Supabase Storage.
     try {
-      // Reemplaza 'equipos' con el nombre de tu bucket de Storage
       return supabase.storage.from('equipos').getPublicUrl(path);
     } catch (_) {
-      // 4. En caso de error (ej. path inválido), devuelve placeholder.
       return 'https://via.placeholder.com/60';
     }
   }
@@ -44,10 +38,9 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
     try {
       final data = await supabase
           .from('reservas')
-          // Selecciona los campos necesarios, incluyendo los detalles del equipo
           .select('id, fecha_reserva, hora_inicio, hora_fin, estado, equipos(nombre, imagen_url)')
           .eq('usuario_id', userId)
-          .order('fecha_reserva', ascending: false); // Muestra las más recientes primero
+          .order('fecha_reserva', ascending: false);
 
       setState(() {
         reservas = data;
@@ -76,17 +69,12 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                     final r = reservas[index];
                     final equipo = r['equipos'];
 
-                    // Obtiene la URL segura de la imagen, manejando nulos
                     final String imageUrl = resolveImageUrl(equipo['imagen_url']);
 
-                    // Formateo de fecha y hora
                     final String fecha = r['fecha_reserva'] != null
                         ? DateFormat('dd/MMM/yyyy').format(DateTime.parse(r['fecha_reserva']))
                         : 'Fecha desconocida';
-                    final String horario = (r['hora_inicio'] as String? ?? 'N/A').substring(0, 5) + 
-                                           ' - ' + 
-                                           (r['hora_fin'] as String? ?? 'N/A').substring(0, 5);
-
+                    final String horario = (r['hora_inicio'] as String? ?? 'N/A').substring(0, 5) + ' - ' + (r['hora_fin'] as String? ?? 'N/A').substring(0, 5);
 
                     return Card(
                       elevation: 3,
@@ -100,7 +88,6 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
-                            // Manejo de error de red o URL inválida
                             errorBuilder: (context, error, stackTrace) {
                               return const Icon(Icons.devices, size: 50, color: Colors.grey);
                             },

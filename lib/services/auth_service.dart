@@ -41,7 +41,6 @@ class AuthService {
       final user = response.user;
       if (user == null) return null;
 
-      // Traer rol del usuario
       final data = await supabase
           .from('usuarios')
           .select('rol')

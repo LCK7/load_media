@@ -78,15 +78,12 @@ class _GestorReservasScreenState extends State<GestorReservasScreen> {
     }
   }
 
-  // ❌ Rechaza la reserva y se asegura de que el equipo esté disponible
   Future<void> rechazarReserva(int reservaId, int equipoId) async {
     try {
-      // 1. Cambia el estado de la reserva a cancelada
       await supabase.from('reservas').update({
         'estado': 'cancelada',
       }).eq('id', reservaId);
       
-      // 2. Se asegura de que el equipo esté disponible (por si acaso estaba marcado como 'prestado' previamente por error)
       await supabase.from('equipos').update({
         'estado': 'disponible', 
       }).eq('id', equipoId);
@@ -103,19 +100,16 @@ class _GestorReservasScreenState extends State<GestorReservasScreen> {
     }
   }
 
-  // Función para resolver la URL de la imagen
   String resolveImageUrl(String? path) {
     if (path == null || path.isEmpty) return 'https://via.placeholder.com/150';
     if (path.startsWith('http')) return path;
     try {
-      // Ajusta 'equipos' si tu bucket de Storage tiene otro nombre
       return supabase.storage.from('equipos').getPublicUrl(path);
     } catch (_) {
       return 'https://via.placeholder.com/150';
     }
   }
 
-  // Widget para el estado vacío (Mejora visual)
   Widget _buildEmptyState() {
     return const Center(
       child: Column(
